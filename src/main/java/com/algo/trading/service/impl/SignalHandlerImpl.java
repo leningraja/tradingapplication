@@ -16,6 +16,11 @@ import com.algo.trading.external.Algo;
 import com.algo.trading.service.SignalHandler;
 import com.algo.trading.util.ConfigUtility;
 
+/**
+ * This class is used handle the trading application signal
+ * @author lenin
+ *
+ */
 @Service
 public class SignalHandlerImpl implements SignalHandler {
 
@@ -24,6 +29,13 @@ public class SignalHandlerImpl implements SignalHandler {
 	@Autowired
 	private ConfigUtility configUtil;
 
+	/**
+	 * This method is used to handle the single service dynamically based on the signal input
+	 * system will retrieve the action and respective parameters from the properties file and call the 
+	 * Algo methods based on the action
+	 * 
+	 * @param signal
+	 */
 	@Override
 	public void handleSignal(int signal) {
 		String signalParams = configUtil.getPropertyByKey(SIGNAL_PARAM_PREFIX.concat(String.valueOf(signal)));
@@ -40,16 +52,22 @@ public class SignalHandlerImpl implements SignalHandler {
 				setSignalParams(signal, signalParams, algo);
 				algo.performCalc();
 				algo.submitToMarket();
+				break;
 			}
 			case SIGNAL_REVERSE_ACTION: {
 				algo.reverse();
 				setSignalParams(signal, signalParams, algo);
 				algo.submitToMarket();
+				break;
 			}
 			case SIGNAL_PERFORM_ACTION: {
 				setSignalParams(signal, signalParams, algo);
 				algo.performCalc();
 				algo.submitToMarket();
+				break;
+			}
+			default:{
+				algo.cancelTrades();
 			}
 			}
 		} else {
@@ -58,6 +76,12 @@ public class SignalHandlerImpl implements SignalHandler {
 		algo.doAlgo();
 	}
 
+	/**
+	 * Static method is used to set the parameter for signal based on the properties value setting.
+	 * @param signal
+	 * @param signalParams
+	 * @param algo
+	 */
 	private void setSignalParams(int signal, String signalParams, Algo algo) {
 		String[] params = signalParams.split(",");
 		for (int i = 0; i < params.length; i++) {

@@ -18,6 +18,11 @@ public class SignalController
     @Autowired
     SignalHandler service;
  
+    /**
+     * This REST service method is used to call the signal service
+     * @param signalId
+     * @return String
+     */
     @GetMapping("/{signalId}")
     @ResponseBody
     public String getEmployeeById(@PathVariable("signalId") int signalId) {
